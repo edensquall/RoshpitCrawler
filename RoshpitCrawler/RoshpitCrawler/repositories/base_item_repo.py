@@ -9,4 +9,3 @@ class BaseItemRepo(BaseRepo[Item]):
     @abstractmethod
     def get_by_item_name(self, item: Item) -> Item:
         raise NotImplementedError
-    pass

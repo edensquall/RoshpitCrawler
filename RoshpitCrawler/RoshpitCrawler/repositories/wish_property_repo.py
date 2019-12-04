@@ -4,5 +4,4 @@ from ..repositories.generic_repo import GenericRepo
 
 
 class WishPropertyRepo(GenericRepo[WishProperty], BaseWishPropertyRepo):
-
     pass

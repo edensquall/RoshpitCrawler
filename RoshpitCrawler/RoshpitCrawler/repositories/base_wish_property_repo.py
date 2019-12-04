@@ -3,5 +3,4 @@ from ..repositories.base_repo import BaseRepo
 
 
 class BaseWishPropertyRepo(BaseRepo[WishProperty]):
-
     pass
