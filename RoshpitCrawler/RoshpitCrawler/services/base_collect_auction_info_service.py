@@ -1,8 +1,6 @@
 from abc import abstractmethod
 from typing import List
 
-from injector import inject
-
 from ..models.notify import Notify
 from ..models.user import User
 from ..models.wish import Wish
@@ -16,7 +14,6 @@ from ..unit_of_works.base_uow import BaseUOW
 
 class BaseCollectAuctionInfoService:
 
-    @inject
     def __init__(self, item_repo: BaseItemRepo, property_repo: BasePropertyRepo, wish_repo: BaseWishRepo,
                  notify_repo: BaseNotifyRepo, parameter_repo: BaseParameterRepo, uow: BaseUOW):
         raise NotImplementedError

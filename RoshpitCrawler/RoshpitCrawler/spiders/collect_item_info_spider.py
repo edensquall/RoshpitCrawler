@@ -1,11 +1,12 @@
 from urllib import parse
 
 import scrapy
+from scrapy.spiders import CrawlSpider
 
 from ..items import ItemType, Item, Property
 
 
-class CollectItemInfoSpider(scrapy.Spider):
+class CollectItemInfoSpider(CrawlSpider):
     name = 'collect_item_info'
     custom_settings = {
         'ITEM_PIPELINES': {

@@ -1,4 +1,5 @@
 import scrapy
+from scrapy.spiders import CrawlSpider
 
 from ..items import Auction, AuctionProperty, Property, ItemType, Item
 from ..repositories.item_repo import ItemRepo
@@ -10,7 +11,7 @@ from ..services.collect_auction_info_service import CollectAuctionInfoService
 from ..unit_of_works.sqlalchemy_uow import SQLAlchemyUOW
 
 
-class CollectAuctionInfoSpider(scrapy.Spider):
+class CollectAuctionInfoSpider(CrawlSpider):
     name = 'collect_auction_info'
     custom_settings = {
         'ITEM_PIPELINES': {
