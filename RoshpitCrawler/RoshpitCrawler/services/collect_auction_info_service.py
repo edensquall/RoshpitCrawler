@@ -33,6 +33,11 @@ class CollectAuctionInfoService(BaseCollectAuctionInfoService):
         self.mailer = Mailer()
 
     def get_crawled_auction_id(self) -> int:
+        """
+        取得上次爬過的拍賣品id
+        Returns: 上次爬過的拍賣品id
+
+        """
         parameter = self.parameter_repo.get_by_id(Parameter(id='crawled_auction_id'))
 
         if parameter:
@@ -41,20 +46,45 @@ class CollectAuctionInfoService(BaseCollectAuctionInfoService):
             return 0
 
     def set_crawled_auction_id(self, crawled_auction_id: int) -> None:
+        """
+        設定爬過的拍賣品id
+        Returns: None
+
+        """
         with self.uow.auto_complete():
             self.parameter_repo.insert(Parameter(id='crawled_auction_id', value=str(crawled_auction_id),
                                                  create_date=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                                                  modify_date=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
     def find_potential_buyer(self, auction: Wish) -> List[User]:
+        """
+        尋找有這項拍賣品需求的買家
+        Returns: 有這項拍賣品需求的買家
+
+        """
         satisfiable_wishes = self.wish_repo.get_satisfiable_wishes(auction)
         return [wish.user for wish in satisfiable_wishes]
 
     def delete_notify(self, notify: Notify) -> None:
+        """
+        移除通知
+        Returns: None
+
+        """
         with self.uow.auto_complete():
             self.notify_repo.delete(notify)
 
-    def send_mail_notify(self, potential_buyer: User, auction: Wish, auction_id):
+    def send_mail_notify(self, potential_buyer: User, auction: Wish, auction_id) -> None:
+        """
+        透過email送出通知
+        Args:
+            potential_buyer: 有這項拍賣品需求的買家
+            auction: 拍賣品資訊
+            auction_id: 拍賣品id
+
+        Returns: None
+
+        """
         self.mailer.send_mail(
             to=potential_buyer.email,
             subject='[Roshpit WishList] Matches found',
@@ -65,7 +95,17 @@ class CollectAuctionInfoService(BaseCollectAuctionInfoService):
                  f'{"Buyout Price"} {str(auction.max_buyout)}\r\n'
                  f'https://www.roshpit.ca/market/auction/{auction_id}\r\n')
 
-    def send_line_notify(self, potential_buyer: User, auction: Wish, auction_id):
+    def send_line_notify(self, potential_buyer: User, auction: Wish, auction_id) -> None:
+        """
+        透過line送出通知
+        Args:
+            potential_buyer: 有這項拍賣品需求的買家
+            auction: 拍賣品資訊
+            auction_id: 拍賣品id
+
+        Returns: None
+
+        """
         for notify in potential_buyer.notify:
             token = notify.id
 
@@ -93,6 +133,15 @@ class CollectAuctionInfoService(BaseCollectAuctionInfoService):
                     self.delete_notify(Notify(id=token))
 
     def notify_potential_buyer(self, auction: Wish, auction_id: str) -> None:
+        """
+        通知有這項拍賣品需求的買家
+        Args:
+            auction: 拍賣品資訊
+            auction_id: 拍賣品id
+
+        Returns: None
+
+        """
         potential_buyers = self.find_potential_buyer(auction)
 
         if potential_buyers:

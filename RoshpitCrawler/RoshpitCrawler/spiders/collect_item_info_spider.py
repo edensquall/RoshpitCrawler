@@ -17,14 +17,27 @@ class CollectItemInfoSpider(CrawlSpider):
         'IS_NEW_DB': True
     }
 
-    def start_requests(self):
+    def start_requests(self) -> None:
+        """
+        開始爬取
+        Returns: None
+
+        """
         urls = [
             'https://www.roshpit.ca/items'
         ]
         for url in urls:
             yield scrapy.Request(url=url, callback=self.parse_item_type)
 
-    def parse_item_type(self, response):
+    def parse_item_type(self, response) -> None:
+        """
+        爬取的道具類型資料
+        Args:
+            response: 取得的頁面資料
+
+        Returns: None
+
+        """
         for item_type_row in response.css('.item-filter-buttons>a.button-link:not([href*="arcana"])'):
             item_type = ItemType()
             item_type['id'] = item_type_row.css("div::attr(data-slot)").get().replace(' ', '')
@@ -34,6 +47,14 @@ class CollectItemInfoSpider(CrawlSpider):
                                  meta={'item_type_id': item_type['id']})
 
     def parse_item(self, response):
+        """
+        爬取的道具資料
+        Args:
+            response: 取得的頁面資料
+
+        Returns: None
+
+        """
         item_type_id = response.meta['item_type_id']
         for item_row in response.css('tr.item-row'):
             item = Item()
@@ -47,6 +68,14 @@ class CollectItemInfoSpider(CrawlSpider):
                                  self.parse_item_detail, meta={'item': item})
 
     def parse_item_detail(self, response):
+        """
+        爬取的更多道具資料
+        Args:
+            response: 取得的頁面資料
+
+        Returns: None
+
+        """
         item = response.meta['item']
         item['code'] = response.css('#main-item-container::attr(data-item-id)').get()
         for i in range(1, 5):
@@ -66,6 +95,14 @@ class CollectItemInfoSpider(CrawlSpider):
                             self.parse_property_roll, meta={'property': property})
 
     def parse_property_roll(self, response):
+        """
+        爬取的道具屬性資料
+        Args:
+            response: 取得的頁面資料
+
+        Returns: None
+
+        """
         property = response.meta['property']
         property['range'] = response.css('td:contains(" - ")::text').get()
         property['is_ability'] = 1 if '★' in response.text else 0

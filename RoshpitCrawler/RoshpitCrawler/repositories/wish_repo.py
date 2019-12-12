@@ -15,6 +15,14 @@ from ..repositories.generic_repo import GenericRepo
 class WishRepo(GenericRepo[Wish], BaseWishRepo):
 
     def get_satisfiable_wishes(self, wish: Wish) -> List[Wish]:
+        """
+        取得與拍賣品數值相符的wish
+        Args:
+            wish: 拍賣品的數值
+
+        Returns: 與拍賣品數值相符的wish
+
+        """
         query = session \
             .query(Wish) \
             .join(Item) \

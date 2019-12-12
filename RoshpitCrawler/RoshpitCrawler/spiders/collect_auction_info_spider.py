@@ -27,16 +27,30 @@ class CollectAuctionInfoSpider(CrawlSpider):
         super(CollectAuctionInfoSpider, self).__init__(*args, **kwargs)
         self.collect_auction_info_service = CollectAuctionInfoService(ItemRepo(), PropertyRepo(), WishRepo(),
                                                                       NotifyRepo(), ParameterRepo(), SQLAlchemyUOW())
+        # 取得上次爬取的拍賣品id
         self.crawled_auction_id = self.collect_auction_info_service.get_crawled_auction_id()
 
-    def start_requests(self):
+    def start_requests(self) -> None:
+        """
+        開始爬取
+        Returns: None
+
+        """
         urls = [
             'https://www.roshpit.ca/market/browse'
         ]
         for url in urls:
             yield scrapy.Request(url=url, callback=self.parse_auction)
 
-    def parse_auction(self, response):
+    def parse_auction(self, response) -> None:
+        """
+        爬取的拍賣品資料
+        Args:
+            response: 取得的頁面資料
+
+        Returns: None
+
+        """
         auction_id = 0
         for auction_row in reversed(response.css('#search-results-market>a')):
 
@@ -66,7 +80,15 @@ class CollectAuctionInfoSpider(CrawlSpider):
 
         self.crawled_auction_id = auction_id
 
-    def parse_auction_property(self, response):
+    def parse_auction_property(self, response) -> None:
+        """
+        爬取的拍賣品的屬性資料
+        Args:
+            response: 取得的頁面資料
+
+        Returns: None
+
+        """
         item_type = ItemType()
         item_type['id'] = response.css('#tooltip_quality_right::text').get().strip().replace(' ', '')
         item_type['name'] = response.css('#tooltip_quality_right::text').get().strip().capitalize()
@@ -100,4 +122,12 @@ class CollectAuctionInfoSpider(CrawlSpider):
         yield {'auction': auction}
 
     def closed(self, reason):
+        """
+        關閉spider，紀錄最後一筆爬取的拍賣品id
+        Args:
+            reason: 原因
+
+        Returns:
+
+        """
         self.collect_auction_info_service.set_crawled_auction_id(self.crawled_auction_id)

@@ -7,6 +7,8 @@ import datetime
 import json
 
 import scrapy
+from scrapy import Spider
+from scrapy.crawler import Crawler
 from scrapy.exceptions import DropItem
 from scrapy.utils.project import get_project_settings
 
@@ -28,18 +30,30 @@ from .unit_of_works.sqlalchemy_uow import SQLAlchemyUOW
 
 class OrganiseItemDataPipeline(object):
 
-    def process_item(self, item, spider):
+    def process_item(self, item: scrapy.Item, spider: Spider) -> scrapy.Item:
+        """
+        處理資料，整理資料
+        Args:
+            item: 資料
+            spider: 執行的spider
 
+        Returns: 處理後的資料
+
+        """
+
+        # 處理道具類型資料
         if 'item_type' in item:
             if item['item_type'].get('id'):
                 if item['item_type'].get('id') == '-1':
                     item['item_type']['id'] = 'glyph'
                     item['item_type']['name'] = 'Glyph'
 
+        # 處理道具資料
         if 'item' in item:
             if item['item'].get('img_url'):
                 item['item']['img'] = item['item'].get('img_url').split('/')[-1]
 
+        # 處理屬性資料
         if 'property' in item:
             if item['property'].get('range'):
                 item['property']['min'] = item['property'].get('range').split(' - ')[0]
@@ -56,21 +70,56 @@ class StoreItemDataPipeline(object):
                                                                 SQLAlchemyUOW())
 
     @classmethod
-    def from_crawler(cls, crawler):
+    def from_crawler(cls, crawler: Crawler) -> None:
+        """
+        取得crawler資訊
+        Args:
+            crawler:執行的crawler
+
+        Returns: None
+
+        """
         return cls(
             is_new_db=crawler.settings.get('IS_NEW_DB')
         )
 
-    def open_spider(self, spider):
+    def open_spider(self, spider: Spider) -> None:
+        """
+        開啟spider，若為新的db則刪除舊資料
+        Args:
+            spider: 執行的spider
+
+        Returns: None
+
+        """
         if self.is_new_db:
             self.collect_item_info_service.delete_all_item_type()
             self.collect_item_info_service.delete_all_item()
             self.collect_item_info_service.delete_all_property()
 
-    def close_spider(self, spider):
+    def close_spider(self, spider: Spider) -> None:
+        """
+        關閉spider
+        Args:
+            spider: 執行的spider
+
+        Returns: None
+
+        """
         pass
 
-    def process_item(self, item, spider):
+    def process_item(self, item: scrapy.Item, spider: Spider) -> scrapy.Item:
+        """
+        處理資料，儲存資料
+        Args:
+            item: 資料
+            spider: 執行的spider
+
+        Returns: 處理後的資料
+
+        """
+
+        # 儲存道具類型
         if 'item_type' in item:
             if self.is_new_db or not self.collect_item_info_service.get_item_type_by_id(
                     ItemType(id=item['item_type'].get('id'))):
@@ -82,6 +131,7 @@ class StoreItemDataPipeline(object):
             else:
                 raise DropItem("Item Type already exists.")
 
+        # 儲存道具
         if 'item' in item:
             if self.is_new_db or not self.collect_item_info_service.get_item_by_id(Item(id=item['item'].get('id'))):
                 self.collect_item_info_service.add_new_item(
@@ -95,6 +145,7 @@ class StoreItemDataPipeline(object):
             else:
                 raise DropItem("Item already exists.")
 
+        # 儲存屬性
         if 'property' in item:
             if self.is_new_db or not self.collect_item_info_service.get_property_by_id(
                     Property(id=item['property'].get('id'))):
@@ -117,6 +168,15 @@ class StoreItemDataPipeline(object):
 class StoreItemImgPipeline(object):
 
     def process_item(self, item, spider):
+        """
+        處理資料，將圖片url發給WishList
+        Args:
+            item: 資料
+            spider: 執行的spider
+
+        Returns: 處理後的資料
+
+        """
 
         if 'item' in item:
             if item['item'].get('img_url') is not None:
@@ -137,6 +197,15 @@ class MatchAuctionPipeline(object):
                                                                       NotifyRepo(), ParameterRepo(), SQLAlchemyUOW())
 
     def process_item(self, item, spider):
+        """
+        處理資料，尋找符合的拍賣品並通知有需求的買家
+        Args:
+            item: 資料
+            spider: 執行的spider
+
+        Returns: 處理後的資料
+
+        """
         if 'auction' in item:
             auction = item['auction']
             wish_properties = []
