@@ -4,13 +4,12 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 import datetime
-import json
 
 import scrapy
-from scrapy import Spider
+from scrapy import Spider, Request
 from scrapy.crawler import Crawler
 from scrapy.exceptions import DropItem
-from scrapy.utils.project import get_project_settings
+from scrapy.pipelines.images import ImagesPipeline
 
 from .models.item import Item
 from .models.item_type import ItemType
@@ -51,7 +50,7 @@ class OrganiseItemDataPipeline(object):
         # 處理道具資料
         if 'item' in item:
             if item['item'].get('img_url'):
-                item['item']['img'] = item['item'].get('img_url').split('/')[-1]
+                item['item']['img'] = item['item'].get('img_url').split('/')[-1].replace('png', 'jpg')
 
         # 處理屬性資料
         if 'property' in item:
@@ -165,29 +164,35 @@ class StoreItemDataPipeline(object):
         return item
 
 
-class StoreItemImgPipeline(object):
+class StoreItemImgPipeline(ImagesPipeline):
 
-    def process_item(self, item, spider):
+    def get_media_requests(self, item: scrapy.Item, info: any) -> None:
         """
-        處理資料，將圖片url發給WishList
+        取得圖片位址
         Args:
             item: 資料
-            spider: 執行的spider
+            info: spider相關資訊
 
-        Returns: 處理後的資料
+        Returns: None
 
         """
-
         if 'item' in item:
-            if item['item'].get('img_url') is not None:
-                data = {'url': item['item'].get('img_url')}
-                request = scrapy.Request(get_project_settings().get("IMAGES_STORE_URL"),
-                                         body=json.dumps(data),
-                                         method='POST',
-                                         headers={'Content-Type': 'application/json'})
-                spider.crawler.engine.crawl(request, spider)
+            if item['item'].get('img_url'):
+                yield Request(item['item'].get('img_url'), meta={'img': item['item'].get('img')})
 
-        return item
+    def file_path(self, request: any, response: any = None, info: any = None) -> str:
+        """
+        更改檔案名稱
+        Args:
+            request: 請求
+            response: 回應
+            info: spider相關資訊
+
+        Returns: 檔案名稱
+
+        """
+        img = request.meta['img']
+        return img
 
 
 class MatchAuctionPipeline(object):
@@ -196,7 +201,7 @@ class MatchAuctionPipeline(object):
         self.collect_auction_info_service = CollectAuctionInfoService(ItemRepo(), PropertyRepo(), WishRepo(),
                                                                       NotifyRepo(), ParameterRepo(), SQLAlchemyUOW())
 
-    def process_item(self, item, spider):
+    def process_item(self, item: scrapy.Item, spider: Spider) -> scrapy.Item:
         """
         處理資料，尋找符合的拍賣品並通知有需求的買家
         Args:
