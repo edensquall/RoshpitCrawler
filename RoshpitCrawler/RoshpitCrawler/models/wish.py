@@ -16,4 +16,4 @@ class Wish(Base):
     create_date = Column(DateTime)
     modify_date = Column(DateTime)
     item = relationship('Item', backref='wish')
-    wish_properties = relationship('WishProperty', backref='wish')
+    wish_properties = relationship('WishProperty', backref='wish', cascade="all, delete-orphan")
