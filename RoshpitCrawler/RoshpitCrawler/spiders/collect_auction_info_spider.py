@@ -27,6 +27,12 @@ class CollectAuctionInfoSpider(CrawlSpider):
         super(CollectAuctionInfoSpider, self).__init__(*args, **kwargs)
         self.collect_auction_info_service = CollectAuctionInfoService(ItemRepo(), PropertyRepo(), WishRepo(),
                                                                       NotifyRepo(), ParameterRepo(), SQLAlchemyUOW())
+        # 是否有爬蟲在工作
+        self.is_spider_crawling = self.collect_auction_info_service.get_is_spider_crawling()
+
+        # 當前這隻爬蟲是否在工作
+        self.is_this_start_crawling = False
+
         # 取得上次爬取的拍賣品id
         self.crawled_auction_id = self.collect_auction_info_service.get_crawled_auction_id()
 
@@ -36,11 +42,22 @@ class CollectAuctionInfoSpider(CrawlSpider):
         Returns: None
 
         """
-        urls = [
-            'https://www.roshpit.ca/market/browse'
-        ]
-        for url in urls:
-            yield scrapy.Request(url=url, callback=self.parse_auction)
+
+        # 目前沒有爬蟲在工作
+        if not self.is_spider_crawling:
+
+            # 這隻爬蟲開始工作
+            self.is_this_start_crawling = True
+
+            # 目前有爬蟲在工作
+            self.is_spider_crawling = True
+            self.collect_auction_info_service.set_is_spider_crawling(self.is_spider_crawling)
+
+            urls = [
+                'https://www.roshpit.ca/market/browse'
+            ]
+            for url in urls:
+                yield scrapy.Request(url=url, callback=self.parse_auction)
 
     def parse_auction(self, response) -> None:
         """
@@ -130,4 +147,16 @@ class CollectAuctionInfoSpider(CrawlSpider):
         Returns:
 
         """
-        self.collect_auction_info_service.set_crawled_auction_id(self.crawled_auction_id)
+
+        # 當前這隻爬蟲有在工作
+        if self.is_this_start_crawling:
+
+            # 紀錄最後一筆爬取的拍賣品id
+            self.collect_auction_info_service.set_crawled_auction_id(self.crawled_auction_id)
+
+            # 當前這隻爬蟲結束工作
+            self.is_this_start_crawling = False
+
+            # 目前沒有爬蟲在工作
+            self.is_spider_crawling = False
+            self.collect_auction_info_service.set_is_spider_crawling(self.is_spider_crawling)

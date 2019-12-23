@@ -32,6 +32,30 @@ class CollectAuctionInfoService(BaseCollectAuctionInfoService):
 
         self.mailer = Mailer()
 
+    def get_is_spider_crawling(self) -> bool:
+        """
+        取得爬蟲是否在工作
+        Returns: 爬蟲是否在工作
+
+        """
+        parameter = self.parameter_repo.get_by_id(Parameter(id='is_spider_crawling'))
+
+        if parameter:
+            return int(parameter.value) == 1
+        else:
+            return False
+
+    def set_is_spider_crawling(self, is_spider_crawling: bool) -> None:
+        """
+        設定爬蟲是否在工作
+        Returns: None
+
+        """
+        with self.uow.auto_complete():
+            self.parameter_repo.insert(Parameter(id='is_spider_crawling', value="1" if is_spider_crawling else "0",
+                                                 create_date=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                                                 modify_date=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+
     def get_crawled_auction_id(self) -> int:
         """
         取得上次爬過的拍賣品id
