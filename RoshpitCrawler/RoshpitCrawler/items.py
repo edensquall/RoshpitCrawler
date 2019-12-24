@@ -51,6 +51,7 @@ class Auction(scrapy.Item):
 
 
 class AuctionProperty(scrapy.Item):
+    type = scrapy.Field()
     roll = scrapy.Field()
     property_id = scrapy.Field()
     property = scrapy.Field()

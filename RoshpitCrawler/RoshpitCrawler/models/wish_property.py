@@ -7,6 +7,7 @@ from ..models import Base
 class WishProperty(Base):
     __tablename__ = 'wish_property'
     id = Column(Integer, primary_key=True, autoincrement=True)
+    type = Column(Integer)
     roll = Column(Integer)
     property_id = Column(String(90), ForeignKey('property.id'))
     wish_id = Column(Integer, ForeignKey('wish.id'))

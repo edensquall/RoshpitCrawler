@@ -217,6 +217,7 @@ class MatchAuctionPipeline(object):
             for auction_property in auction['action_property']:
                 wish_properties.append(
                     WishProperty(
+                        type=auction_property['type'],
                         roll=auction_property['roll'],
                         property_id=auction_property['property_id'],
                         property=Property(id=auction_property['property'].get('id'),

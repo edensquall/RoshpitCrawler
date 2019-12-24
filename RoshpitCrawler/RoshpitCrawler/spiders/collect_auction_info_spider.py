@@ -130,6 +130,7 @@ class CollectAuctionInfoSpider(CrawlSpider):
             yield {'property': property}
 
             action_property = AuctionProperty()
+            action_property['type'] = i
             action_property['roll'] = property_row.css(f'#properties_value{i}::text').get().strip()
             action_property['property_id'] = property['id']
             action_property['property'] = property
