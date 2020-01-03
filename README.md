@@ -8,7 +8,7 @@ RoshpitCrawler是一個用來爬取[Roshpit Champions](https://www.roshpit.ca)�
 - CollectAuctionInfoSpider(透過排程每幾分鐘執行一次)
 取得拍賣品的資料並比對是否符合使用者想要購買的道具屬性，若符合則透過Line或者是E-mail做通知。
 
-RoshpitCrawler需要搭配[RoshpitWishList](https://github.com/edensquall/RoshpitWishList)才能發揮完整的功能，使用者透過RoshpitWishList網站建立想要購買的道具清單與設定通知方式。
+RoshpitCrawler需要搭配[RoshpitWishList](https://github.com/edensquall/RoshpitWishList)才能發揮完整的功能，使用者透過RoshpitWishList建立想要購買的道具清單與設定通知方式。
 
 
 ## 使用框架
