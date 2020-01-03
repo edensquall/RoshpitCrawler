@@ -27,23 +27,23 @@ RoshpitCrawler需要搭配[RoshpitWishList](https://github.com/edensquall/Roshpi
 .
 ├── RoshpitCrawler
 │   ├── RoshpitCrawler
-│   │   ├── __init__.py										RoshpitCrawler的初始化
-│   │   ├── items.py											Scrapy傳遞資料的物件
-│   │   ├── middlewares.py								Scrapy中間件
-│   │   ├── models												各種Model
-│   │   ├── pipelines.py									Scrapy資料處理管線
-│   │   ├── repositories									各種Repository
-│   │   ├── services											各種Application Service
-│   │   ├── settings.py										Scrapy設定
-│   │   ├── spiders												Scrapy爬蟲
-│   │   ├── unit_of_works									各種Unit of Work
-│   │   └── utils													公用程式
-│   ├── .env															各種環境變數 (須自行建立)
-│   ├── run_collect_auction_info_sp.py		執行collect_auction_info爬蟲
-│   ├── run_collect_item_info_sp.py				執行collect_item_info爬蟲
-│   └── scrapy.cfg												Scrapy專案設定
-├── requirements.txt											所有需要的套件
-└── venv																	虛擬環境 (須自行建立)
+│   │   ├── __init__.py                     RoshpitCrawler的初始化
+│   │   ├── items.py                        Scrapy傳遞資料的物件
+│   │   ├── middlewares.py                  Scrapy中間件
+│   │   ├── models                          各種Model
+│   │   ├── pipelines.py                    Scrapy資料處理管線
+│   │   ├── repositories                    各種Repository
+│   │   ├── services                        各種Application Service
+│   │   ├── settings.py                     Scrapy設定
+│   │   ├── spiders                         Scrapy爬蟲
+│   │   ├── unit_of_works                   各種Unit of Work
+│   │   └── utils                           公用程式
+│   ├── .env                                各種環境變數 (須自行建立)
+│   ├── run_collect_auction_info_sp.py      執行collect_auction_info爬蟲
+│   ├── run_collect_item_info_sp.py         執行collect_item_info爬蟲
+│   └── scrapy.cfg                          Scrapy專案設定
+├── requirements.txt                        所有需要的套件
+└── venv                                    虛擬環境 (須自行建立)
 ```
 
 ## 需求
