@@ -74,8 +74,8 @@ DATABASE_URL = [DATABASE_URL]
 
 IMAGES_STORE = [IMAGES_STORE]
 
-GCS_PROJECT_ID = [GCS_PROJECT_ID] (使用Google Cloud Storage才需要)
-GAC_PATH = [GAC_PATH]							(使用Google Cloud Storage才需要)
+GCS_PROJECT_ID = [GCS_PROJECT_ID]   (使用Google Cloud Storage才需要)
+GAC_PATH = [GAC_PATH]               (使用Google Cloud Storage才需要)
 
 MAIL_HOST = [MAIL_HOST]
 MAIL_PORT = [MAIL_PORT]
