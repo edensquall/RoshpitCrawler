@@ -80,9 +80,14 @@ class CollectAuctionInfoSpider(CrawlSpider):
 
                 auction = Auction()
                 auction['id'] = auction_row.css('::attr(href)').get().split('/')[-1]
-                auction['currency'] = 1 if 'mithril_shard' in (
-                        auction_row.css('.shop-search-row>div:nth-of-type(4)>img::attr(src)').get() or
-                        auction_row.css('.shop-search-row>div:nth-of-type(5)>img::attr(src)').get()) else 2
+                currency_imgs = [auction_row.css('.shop-search-row>div:nth-of-type(4)>img::attr(src)').get(),
+                                 auction_row.css('.shop-search-row>div:nth-of-type(5)>img::attr(src)').get()]
+                if 'mithril_shard' in currency_imgs:
+                    auction['currency'] = 1
+                elif 'arcane_crystal' in currency_imgs:
+                    auction['currency'] = 2
+                elif 'prismatic_gemstone' in currency_imgs:
+                    auction['currency'] = 3
                 auction['bid'] = auction_row.css('.shop-search-row>div:nth-of-type(4)::text').extract()[
                     -1].strip().replace(',', '')
                 auction['buyout'] = auction_row.css('.shop-search-row>div:nth-of-type(5)::text').extract()[
@@ -151,7 +156,6 @@ class CollectAuctionInfoSpider(CrawlSpider):
 
         # 當前這隻爬蟲有在工作
         if self.is_this_start_crawling:
-
             # 紀錄最後一筆爬取的拍賣品id
             self.collect_auction_info_service.set_crawled_auction_id(self.crawled_auction_id)
 
